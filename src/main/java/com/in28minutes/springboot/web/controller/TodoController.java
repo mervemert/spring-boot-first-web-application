@@ -20,21 +20,27 @@ public class TodoController {
     TodoService todoService;
 
     @RequestMapping(value = "/list-todos", method = RequestMethod.GET)
-    public String showTodos(ModelMap modelMap){
+    public String showTodos(ModelMap modelMap) {
 
-        String name = (String)modelMap.get("name"); //String geldiğini bildiğim için String'e cast ediyorum
+        String name = (String) modelMap.get("name"); //String geldiğini bildiğim için String'e cast ediyorum
         modelMap.put("todos", todoService.retrieveTodos(name));
         return "list-todos";
     }
 
     @RequestMapping(value = "/add-todo", method = RequestMethod.GET)
-    public String showAddTodoPage(ModelMap modelMap){
+    public String showAddTodoPage(ModelMap modelMap) {
         return "todo";
     }
 
+    @RequestMapping(value = "/delete-todo", method = RequestMethod.GET)
+    public String deleteTodo(@RequestParam int id) {
+        todoService.deleteTodo(id);
+        return "redirect:/list-todos";
+    }
+
     @RequestMapping(value = "/add-todo", method = RequestMethod.POST)
-    public String addTodo(ModelMap modelMap, @RequestParam String desc){
-        todoService.addTodo((String)modelMap.get("name"), desc, new Date(), false);
+    public String addTodo(ModelMap modelMap, @RequestParam String desc) {
+        todoService.addTodo((String) modelMap.get("name"), desc, new Date(), false);
         modelMap.clear();
         return "redirect:/list-todos";
     }
