@@ -32,7 +32,6 @@ public class TodoService {
     }
 
     public Todo retrieveTodo(int id) {
-        //tüm todo'lari dolasip id'si fe'den gelen id'ye esit olan todo'yu bulur
         for (Todo todo : todoList) {
             if (todo.getId() == id)
                 return todo;
@@ -55,7 +54,6 @@ public class TodoService {
     }
 
     public void updateTodo(Todo todo) {
-        //TODO calismiyor
         todoList.remove(todo);
         todoList.add(todo);
     }
