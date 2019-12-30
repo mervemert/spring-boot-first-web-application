@@ -20,28 +20,43 @@ public class TodoService {
         todoList.add(new Todo(3, "in28minutes", "Learn Hibernate", new Date(), true));
     }
 
-    public List<Todo> retrieveTodos(String user){
+    public List<Todo> retrieveTodos(String user) {
         List<Todo> filteredTodos = new ArrayList<>();
 
-        for(Todo todo : todoList){
-            if(todo.getUser().equals(user)) {
+        for (Todo todo : todoList) {
+            if (todo.getUser().equalsIgnoreCase(user)) {
                 filteredTodos.add(todo);
             }
         }
-        return  filteredTodos;
+        return filteredTodos;
     }
 
-    public void addTodo(String name, String description, Date targetDate, boolean isDone){
-        todoList.add(new Todo(todoCount++, name, description, targetDate, isDone));
+    public Todo retrieveTodo(int id) {
+        //tüm todo'lari dolasip id'si fe'den gelen id'ye esit olan todo'yu bulur
+        for (Todo todo : todoList) {
+            if (todo.getId() == id)
+                return todo;
+        }
+        return null;
     }
 
-    public void deleteTodo(int i){
+    public void addTodo(String name, String description, Date targetDate, boolean isDone) {
+        todoList.add(new Todo(++todoCount, name, description, targetDate, isDone));
+    }
+
+    public void deleteTodo(int i) {
         Iterator<Todo> iterator = todoList.iterator();
         while (iterator.hasNext()) {
             Todo todo = iterator.next();
-            if(todo.getId() == i)
+            if (todo.getId() == i)
                 iterator.remove();
 
         }
+    }
+
+    public void updateTodo(Todo todo) {
+        //TODO calismiyor
+        todoList.remove(todo);
+        todoList.add(todo);
     }
 }

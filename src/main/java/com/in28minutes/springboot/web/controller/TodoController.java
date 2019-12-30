@@ -1,10 +1,11 @@
 package com.in28minutes.springboot.web.controller;
 
-import com.in28minutes.springboot.web.model.Todo;
-import com.in28minutes.springboot.web.service.TodoService;
+import java.util.Date;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,43 +13,67 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import javax.validation.Valid;
-import java.util.Date;
+import com.in28minutes.springboot.web.model.Todo;
+import com.in28minutes.springboot.web.service.LoginService;
+import com.in28minutes.springboot.web.service.TodoService;
 
 @Controller
 @SessionAttributes("name")
 public class TodoController {
 
     @Autowired
-    TodoService todoService;
+    TodoService service;
 
     @RequestMapping(value = "/list-todos", method = RequestMethod.GET)
-    public String showTodos(ModelMap modelMap) {
-
-        String name = (String) modelMap.get("name"); //String geldiğini bildiğim için String'e cast ediyorum
-        modelMap.put("todos", todoService.retrieveTodos(name));
+    public String showTodos(ModelMap model) {
+        String name = (String) model.get("name");
+        model.put("todos", service.retrieveTodos(name));
         return "list-todos";
     }
 
+    @RequestMapping(value = "/add-todo", method = RequestMethod.GET)
+    public String showAddTodoPage(ModelMap model) {
+        model.addAttribute("todo", new Todo(0, (String) model.get("name"),
+                "Default Desc", new Date(), false));
+        return "todo";
+    }
 
     @RequestMapping(value = "/delete-todo", method = RequestMethod.GET)
     public String deleteTodo(@RequestParam int id) {
-        todoService.deleteTodo(id);
+        service.deleteTodo(id);
         return "redirect:/list-todos";
     }
 
-    @RequestMapping(value = "/add-todo", method = RequestMethod.GET)
-    public String showAddTodoPage(ModelMap modelMap) {
-        modelMap.addAttribute("todo", new Todo(0, (String)modelMap.get("name"), "Test Description", new Date(), false));
+    @RequestMapping(value = "/update-todo", method = RequestMethod.GET)
+    public String showUpdateTodoPage(@RequestParam int id, ModelMap model) {
+        Todo todo = service.retrieveTodo(id);
+        model.put("todo", todo);
         return "todo";
     }
-    @RequestMapping(value = "/add-todo", method = RequestMethod.POST)
-    public String addTodo(ModelMap modelMap, @Valid Todo todo, BindingResult result) {
-        //validation'da hata varsa todojsp sayfasına gitsin
-        if(result.hasErrors())
+
+    @RequestMapping(value = "/update-todo", method = RequestMethod.POST)
+    public String updateTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
+
+        if (result.hasErrors()) {
             return "todo";
-        todoService.addTodo((String) modelMap.get("name"), todo.getDescr(), new Date(), false);
-        modelMap.clear();
+        }
+
+        todo.setUser((String) model.get("name"));
+
+        service.updateTodo(todo);
+
+        return "redirect:/list-todos";
+    }
+
+    @RequestMapping(value = "/add-todo", method = RequestMethod.POST)
+    public String addTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
+
+        if (result.hasErrors()) {
+            return "todo";
+        }
+
+        service.addTodo((String) model.get("name"), todo.getDesc(), new Date(),
+                false);
         return "redirect:/list-todos";
     }
 }
