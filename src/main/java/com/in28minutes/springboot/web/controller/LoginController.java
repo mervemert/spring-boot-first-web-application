@@ -2,6 +2,8 @@ package com.in28minutes.springboot.web.controller;
 
 import com.in28minutes.springboot.web.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +19,17 @@ public class LoginController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String showLoginPage(ModelMap model){
-        model.put("name", "in28minutes");
+        model.put("name", getLoggedinUserName());
         return "welcome";
+    }
+
+    private String getLoggedinUserName(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails){
+            return ((UserDetails) principal).getUsername();
+        }
+        return principal.toString();
+
     }
 
 

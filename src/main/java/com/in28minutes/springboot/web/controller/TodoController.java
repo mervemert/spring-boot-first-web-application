@@ -7,6 +7,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -34,7 +36,7 @@ public class TodoController {
 
     @RequestMapping(value = "/list-todos", method = RequestMethod.GET)
     public String showTodos(ModelMap model) {
-        String name = getLoggedInUserName(model);
+        String name = getLoggedinUserName();
         model.put("todos", service.retrieveTodos(name));
         return "list-todos";
     }
@@ -42,7 +44,7 @@ public class TodoController {
 
     @RequestMapping(value = "/add-todo", method = RequestMethod.GET)
     public String showAddTodoPage(ModelMap model) {
-        model.addAttribute("todo", new Todo(0, getLoggedInUserName(model),
+        model.addAttribute("todo", new Todo(0, getLoggedinUserName(),
                 "Default Desc", new Date(), false));
         return "todo";
     }
@@ -67,7 +69,7 @@ public class TodoController {
             return "todo";
         }
 
-        todo.setUser(getLoggedInUserName(model));
+        todo.setUser(getLoggedinUserName());
 
         service.updateTodo(todo);
 
@@ -81,13 +83,18 @@ public class TodoController {
             return "todo";
         }
 
-        service.addTodo(getLoggedInUserName(model), todo.getDesc(), new Date(),
+        service.addTodo(getLoggedinUserName(), todo.getDesc(), new Date(),
                 false);
         return "redirect:/list-todos";
     }
 
-    private String getLoggedInUserName(ModelMap model) {
-        return (String) model.get("name");
+    private String getLoggedinUserName(){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if(principal instanceof UserDetails){
+            return ((UserDetails) principal).getUsername();
+        }
+        return principal.toString();
+
     }
 
 }
