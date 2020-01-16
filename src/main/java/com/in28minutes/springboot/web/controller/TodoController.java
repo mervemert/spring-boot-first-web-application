@@ -16,7 +16,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import com.in28minutes.springboot.web.model.Todo;
-import com.in28minutes.springboot.web.service.LoginService;
 import com.in28minutes.springboot.web.service.TodoService;
 
 @Controller

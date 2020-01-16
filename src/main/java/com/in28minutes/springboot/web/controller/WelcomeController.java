@@ -1,24 +1,17 @@
 package com.in28minutes.springboot.web.controller;
 
-import com.in28minutes.springboot.web.service.LoginService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
-@SessionAttributes("name")
-public class LoginController {
-
-    @Autowired
-    LoginService loginService;
+public class WelcomeController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String showLoginPage(ModelMap model){
+    public String showWelcomePage(ModelMap model){
         model.put("name", getLoggedinUserName());
         return "welcome";
     }
@@ -31,6 +24,5 @@ public class LoginController {
         return principal.toString();
 
     }
-
 
 }
